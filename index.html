@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The DBT Journey — Skills for Real Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===================================================
+   RESET & VARIABLES
+=================================================== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sidebar-w:272px;
+  --bg:#F7F4EF;
+  --sidebar:#1A2B32;
+  --sidebar-hover:rgba(255,255,255,0.06);
+  --sidebar-active:rgba(255,255,255,0.12);
+  --sidebar-text:rgba(255,255,255,0.65);
+  --sidebar-text-active:#fff;
+  --panel:#fff;
+  --border:#E4DFD6;
+  --border-dark:#C8C0B4;
+  --text:#1C1C1C;
+  --text-mid:#5A5550;
+  --text-light:#8A847C;
+  --dt:#C4714A;
+  --dt-bg:rgba(196,113,74,0.08);
+  --dt-border:rgba(196,113,74,0.25);
+  --er:#3D7D6A;
+  --er-bg:rgba(61,125,106,0.08);
+  --er-border:rgba(61,125,106,0.25);
+  --gold:#B08D3C;
+  --gold-bg:rgba(176,141,60,0.07);
+  --blue:#3B6EA0;
+  --blue-bg:rgba(59,110,160,0.07);
+  --success:#3D7D6A;
+  --step-line:#D6D0C8;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ===================================================
+   SIDEBAR
+=================================================== */
+.sidebar{
+  position:fixed;
+  top:0;left:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--sidebar);
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  transition:transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-logo{
+  padding:22px 20px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.sidebar-logo h1{
+  font-family:'Fraunces',serif;
+  font-size:1.15rem;
+  font-weight:600;
+  color:#fff;
+  letter-spacing:-0.02em;
+  line-height:1.2;
+}
+.sidebar-logo h1 span{color:var(--dt);}
+.sidebar-logo p{
+  font-size:0.7rem;
+  color:var(--sidebar-text);
+  margin-top:3px;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.sidebar-progress{
+  padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.progress-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:0.7rem;
+  color:var(--sidebar-text);
+  margin-bottom:7px;
+}
+.progress-track{
+  height:3px;
+  background:rgba(255,255,255,0.1);
+  border-radius:2px;
+}
+.progress-fill{
+  height:100%;
+  background:var(--dt);
+  border-radius:2px;
+  transition:width 0.5s ease;
+  width:0%;
+}
+.sidebar-nav{
+  flex:1;
+  overflow-y:auto;
+  padding:10px 0 20px;
+}
+.sidebar-nav::-webkit-scrollbar{width:3px}
+.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.module-label{
+  padding:14px 20px 6px;
+  font-size:0.65rem;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.35);
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:9px 20px;
+  cursor:pointer;
+  transition:background 0.15s;
+  position:relative;
+  border-radius:0;
+}
+.nav-item:hover{background:var(--sidebar-hover)}
+.nav-item.active{background:var(--sidebar-active)}
+.nav-item.active::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:var(--dt);
+  border-radius:0 2px 2px 0;
+}
+.nav-item.active.er::before{background:var(--er);}
+.nav-dot{
+  width:20px;height:20px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.6rem;
+  color:rgba(255,255,255,0.3);
+  flex-shrink:0;
+  font-weight:600;
+  transition:all 0.2s;
+}
+.nav-dot.done{background:var(--er);border-color:var(--er);color:#fff;font-size:0.65rem;}
+.nav-dot.active{border-color:#fff;color:#fff;}
+.nav-dot.dt-active{border-color:var(--dt);color:var(--dt);}
+.nav-dot.er-active{border-color:var(--er);color:var(--er);}
+.nav-text{flex:1;min-width:0}
+.nav-text .lesson-num{font-size:0.65rem;color:rgba(255,255,255,0.4);font-weight:500;}
+.nav-text .lesson-name{
+  font-size:0.8rem;
+  color:var(--sidebar-text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1.3;
+  margin-top:1px;
+}
+.nav-item.active .lesson-name{color:var(--sidebar-text-active);}
+.nav-tag{
+  font-size:0.6rem;
+  padding:2px 6px;
+  border-radius:3px;
+  background:rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.35);
+  flex-shrink:0;
+}
+.nav-tag.soon{background:transparent;border:1px solid rgba(255,255,255,0.1);}
+
+/* ===================================================
+   MAIN CONTENT
+=================================================== */
+.main{
+  margin-left:var(--sidebar-w);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===================================================
+   TOP BAR
+=================================================== */
+.topbar{
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  gap:16px;
+}
+.hamburger{
+  display:none;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:6px;
+  color:var(--text);
+  flex-direction:column;
+  gap:5px;
+}
+.hamburger span{display:block;width:22px;height:2px;background:currentColor;border-radius:1px;transition:all 0.2s;}
+.topbar-lesson{
+  font-family:'Fraunces',serif;
+  font-size:1rem;
+  font-weight:600;
+  color:var(--text);
+  flex:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.topbar-badge{
+  font-size:0.7rem;
+  font-weight:600;
+  padding:4px 10px;
+  border-radius:20px;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+.topbar-badge.dt{background:var(--dt-bg);color:var(--dt);border:1px solid var(--dt-border);}
+.topbar-badge.er{background:var(--er-bg);color:var(--er);border:1px solid var(--er-border);}
+.topbar-badge.intro{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(59,110,160,0.2);}
+
+/* ===================================================
+   LESSON CONTENT
+=================================================== */
+.lesson-view{
+  flex:1;
+  max-width:780px;
+  margin:0 auto;
+  width:100%;
+  padding:40px 32px 80px;
+}
+.lesson-view.hidden{display:none;}
+
+/* Objectives bar */
+.objectives{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 22px;
+  margin-bottom:32px;
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+}
+.obj-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.obj-content h4{
+  font-size:0.72rem;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-light);
+  margin-bottom:8px;
+}
+.obj-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.obj-chip{
+  font-size:0.77rem;
+  padding:4px 11px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:20px;
+  color:var(--text-mid);
+}
+
+/* Content typography */
+.lesson-view h2{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.5rem,3vw,2rem);
+  font-weight:600;
+  line-height:1.2;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.02em;
+}
+.lesson-view .lesson-intro{
+  font-family:'Lora',serif;
+  font-size:1.02rem;
+  line-height:1.85;
+  color:var(--text-mid);
+  margin-bottom:32px;
+  font-style:italic;
+}
+.lesson-view h3{
+  font-family:'Fraunces',serif;
+  font-size:1.18rem;
+  font-weight:600;
+  color:var(--text);
+  margin:32px 0 12px;
+  letter-spacing:-0.01em;
+}
+.lesson-view h3:first-of-type{margin-top:0;}
+.lesson-view p{
+  font-size:0.95rem;
+  line-height:1.8;
+  color:#3A3630;
+  margin-bottom:14px;
+}
+.lesson-view p strong{color:var(--text);font-weight:600;}
+.lesson-view p em{font-style:italic;color:var(--text-mid);}
+.lesson-view p:last-child{margin-bottom:0;}
+
+/* Callouts */
+.callout{
+  border-radius:10px;
+  padding:14px 18px;
+  margin:20px 0;
+  display:flex;
+  gap:12px;
+}
+.callout.info{background:var(--blue-bg);border:1px solid rgba(59,110,160,0.2);}
+.callout.warning{background:var(--dt-bg);border:1px solid var(--dt-border);}
+.callout.tip{background:var(--er-bg);border:1px solid var(--er-border);}
+.callout.gold{background:var(--gold-bg);border:1px solid rgba(176,141,60,0.2);}
+.callout-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.callout-body{}
+.callout-body .c-label{
+  font-size:0.68rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.callout.info .c-label{color:var(--blue);}
+.callout.warning .c-label{color:var(--dt);}
+.callout.tip .c-label{color:var(--er);}
+.callout.gold .c-label{color:var(--gold);}
+.callout-body p{font-size:0.88rem;line-height:1.65;color:var(--text-mid);margin:0;}
+
+/* Skill grid */
+.skill-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:18px 0;
+}
+@media(max-width:540px){.skill-grid{grid-template-columns:1fr;}}
+.skill-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+}
+.skill-card .sk-letter{
+  font-family:'Fraunces',serif;
+  font-size:1.6rem;
+  font-weight:700;
+  line-height:1;
+  margin-bottom:6px;
+}
+.skill-card h5{font-size:0.85rem;font-weight:600;margin-bottom:4px;}
+.skill-card p{font-size:0.8rem;color:var(--text-mid);line-height:1.5;margin:0;}
+.dt-text{color:var(--dt);}
+.er-text{color:var(--er);}
+
+/* Steps */
+.steps-list{margin:16px 0;display:flex;flex-direction:column;gap:0;}
+.step-item{
+  display:flex;
+  gap:16px;
+  padding-bottom:20px;
+  position:relative;
+}
+.step-item:not(:last-child)::before{
+  content:'';
+  position:absolute;
+  left:14px;
+  top:30px;
+  bottom:0;
+  width:1px;
+  background:var(--step-line);
+}
+.step-num{
+  width:28px;height:28px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;
+  flex-shrink:0;
+  position:relative;
+  z-index:1;
+}
+.step-num.dt-num{background:var(--dt-bg);color:var(--dt);border:1.5px solid var(--dt-border);}
+.step-num.er-num{background:var(--er-bg);color:var(--er);border:1.5px solid var(--er-border);}
+.step-body{padding-top:3px;flex:1;}
+.step-body p{font-size:0.9rem;line-height:1.7;color:#3A3630;margin:0;}
+.step-body strong{color:var(--text);}
+
+/* Table */
+.data-table{
+  width:100%;border-collapse:collapse;
+  margin:18px 0;
+  font-size:0.87rem;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.data-table th{
+  background:#F0EDE8;
+  padding:10px 14px;
+  text-align:left;
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-mid);
+  border-bottom:1px solid var(--border);
+}
+.data-table td{
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  color:#3A3630;
+  vertical-align:top;
+  line-height:1.5;
+}
+.data-table tr:last-child td{border-bottom:none;}
+
+/* Quote */
+.pull-quote{
+  border-left:3px solid var(--gold);
+  padding:14px 20px;
+  margin:24px 0;
+  background:var(--gold-bg);
+  border-radius:0 10px 10px 0;
+}
+.pull-quote p{
+  font-family:'Lora',serif;
+  font-style:italic;
+  font-size:1rem;
+  color:var(--text);
+  margin:0 0 8px;
+}
+.pull-quote cite{font-size:0.75rem;color:var(--text-light);font-style:normal;}
+
+/* Definition box */
+.def-box{
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  margin:18px 0;
+}
+.def-head{
+  background:#F0EDE8;
+  padding:9px 16px;
+  font-size:0.7rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--text-light);
+}
+.def-body{
+  padding:14px 16px;
+  background:var(--panel);
+}
+.def-body p{font-size:0.9rem;line-height:1.75;margin:0;color:#3A3630;}
+
+/* Interactive breathing */
+.breathing-widget{
+  background:linear-gradient(135deg,rgba(61,125,106,0.08),rgba(61,125,106,0.03));
+  border:1px solid var(--er-border);
+  border-radius:16px;
+  padding:32px;
+  text-align:center;
+  margin:20px 0;
+}
+.breath-ring{
+  width:110px;height:110px;
+  border-radius:50%;
+  background:var(--er);
+  margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:0.9rem;font-weight:600;
+  cursor:pointer;
+  box-shadow:0 0 0 0 rgba(61,125,106,0.3);
+  transition:transform 0.1s;
+}
+.breath-ring:hover{transform:scale(1.03);}
+.breath-phase-label{
+  font-family:'Fraunces',serif;
+  font-size:1.1rem;font-weight:600;
+  color:var(--er);min-height:28px;
+}
+.breath-sub{font-size:0.78rem;color:var(--text-light);margin-top:4px;}
+.breath-btn{
+  background:var(--er);color:#fff;
+  border:none;border-radius:50px;
+  padding:10px 24px;font-family:'DM Sans',sans-serif;
+  font-size:0.85rem;font-weight:500;cursor:pointer;
+  margin-top:16px;transition:background 0.2s;
+}
+.breath-btn:hover{background:#2D6657;}
+
+/* ===================================================
+   WORKSHEET — the core redesign
+=================================================== */
+.worksheet{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  margin-top:40px;
+}
+.ws-header{
+  padding:20px 24px;
+  border-bottom:1px solid var(--border);
+  background:#F9F7F3;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.ws-icon{font-size:1.5rem;flex-shrink:0;}
+.ws-header-text h4{
+  font-family:'Fraunces',serif;
+  font-size:1.05rem;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:3px;
+}
+.ws-header-text p{
+  font-size:0.8rem;
+  color:var(--text-light);
+  line-height:1.5;
+  margin:0;
+}
+.ws-body{padding:0;}
+
+/* Each worksheet step */
+.ws-step{
+  padding:24px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.ws-step:last-child{border-bottom:none;}
+.ws-step-head{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:16px;
+}
+.ws-step-num{
+  width:26px;height:26px;
+  border-radius:50%;
+  background:var(--bg);
+  border:1.5px solid var(--border-dark);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;
+  color:var(--text-light);
+  flex-shrink:0;
+  margin-top:1px;
+}
+.ws-step.dt .ws-step-num{background:var(--dt-bg);border-color:var(--dt-border);color:var(--dt);}
+.ws-step.er .ws-step-num{background:var(--er-bg);border-color:var(--er-border);color:var(--er);}
+.ws-step-info{}
+.ws-step-info .step-q{
+  font-size:0.92rem;
+  font-weight:600;
+  color:var(--text);
+  line-height:1.4;
+  margin-bottom:4px;
+}
+.ws-step-info .step-why{
+  font-size:0.78rem;
+  color:var(--text-light);
+  line-height:1.5;
+  font-style:italic;
+}
+
+/* Form elements */
+textarea.ws-input,input.ws-input{
+  width:100%;
+  background:var(--bg);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:11px 14px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+  resize:vertical;
+}
+textarea.ws-input{min-height:85px;}
+textarea.ws-input:focus,input.ws-input:focus{
+  border-color:var(--er);
+  box-shadow:0 0 0 3px var(--er-bg);
+}
+.ws-step.dt textarea.ws-input:focus,
+.ws-step.dt input.ws-input:focus{
+  border-color:var(--dt);
+  box-shadow:0 0 0 3px var(--dt-bg);
+}
+
+/* Rating slider */
+.slider-wrap{margin-top:4px;}
+.slider-row{display:flex;align-items:center;gap:12px;}
+.ws-slider{
+  flex:1;
+  accent-color:var(--er);
+  cursor:pointer;
+  height:4px;
+}
+.ws-step.dt .ws-slider{accent-color:var(--dt);}
+.slider-val{
+  font-family:'Fraunces',serif;
+  font-size:1.3rem;
+  font-weight:700;
+  color:var(--er);
+  min-width:28px;
+  text-align:center;
+}
+.ws-step.dt .slider-val{color:var(--dt);}
+.slider-labels{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-light);margin-top:4px;}
+
+/* Checkbox items */
+.check-items{display:flex;flex-direction:column;gap:6px;}
+.check-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:border-color 0.15s,background 0.15s;
+}
+.check-item:hover{border-color:var(--border-dark);}
+.check-item.checked{background:var(--er-bg);border-color:var(--er-border);}
+.ws-step.dt .check-item.checked{background:var(--dt-bg);border-color:var(--dt-border);}
+.check-item input[type=checkbox]{
+  width:16px;height:16px;
+  accent-color:var(--er);
+  margin-top:1px;flex-shrink:0;cursor:pointer;
+}
+.ws-step.dt .check-item input[type=checkbox]{accent-color:var(--dt);}
+.check-item label{font-size:0.87rem;color:var(--text);line-height:1.4;cursor:pointer;}
+
+/* Multi-column check */
+.check-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+@media(max-width:480px){.check-grid{grid-template-columns:1fr;}}
+
+/* Emotion chips */
+.emotion-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.emo-chip{
+  padding:6px 12px;
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  font-size:0.8rem;
+  cursor:pointer;
+  transition:all 0.15s;
+  background:var(--bg);
+  color:var(--text-mid);
+  font-weight:500;
+}
+.emo-chip:hover{border-color:var(--border-dark);}
+.emo-chip.sel{background:var(--er);border-color:var(--er);color:#fff;}
+
+/* Inline tip within worksheet */
+.ws-tip{
+  background:var(--blue-bg);
+  border:1px solid rgba(59,110,160,0.15);
+  border-radius:8px;
+  padding:10px 14px;
+  margin-top:12px;
+  font-size:0.8rem;
+  color:var(--blue);
+  line-height:1.5;
+}
+.ws-tip strong{font-weight:600;}
+
+/* Worksheet footer */
+.ws-footer{
+  padding:20px 24px;
+  background:#F9F7F3;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.ws-save-btn{
+  background:var(--er);
+  color:#fff;border:none;
+  border-radius:50px;padding:11px 26px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:7px;
+}
+.ws-save-btn:hover{background:#2D6657;transform:translateY(-1px);}
+.ws-save-btn.dt-btn{background:var(--dt);}
+.ws-save-btn.dt-btn:hover{background:#a85a35;}
+.ws-save-btn.saved{background:#888;pointer-events:none;}
+.ws-note{font-size:0.75rem;color:var(--text-light);line-height:1.4;max-width:220px;}
+.ws-saved-msg{
+  display:none;
+  background:var(--er-bg);
+  border:1px solid var(--er-border);
+  border-radius:8px;
+  padding:10px 16px;
+  font-size:0.83rem;
+  color:var(--er);
+  font-weight:500;
+  width:100%;
+  text-align:center;
+}
+.ws-saved-msg.show{display:block;}
+
+/* ===================================================
+   LESSON FOOTER (complete + next)
+=================================================== */
+.lesson-footer{
+  margin-top:48px;
+  padding-top:28px;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.complete-btn{
+  background:var(--text);
+  color:#fff;border:none;
+  border-radius:50px;padding:12px 28px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:8px;
+}
+.complete-btn:hover{background:var(--er);}
+.complete-btn.done{background:var(--er);pointer-events:none;}
+.next-btn{
+  background:transparent;
+  color:var(--text-mid);
+  border:1.5px solid var(--border);
+  border-radius:50px;padding:12px 22px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.85rem;font-weight:500;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:6px;
+}
+.next-btn:hover{border-color:var(--text-mid);color:var(--text);}
+
+/* ===================================================
+   WELCOME SCREEN
+=================================================== */
+.welcome-screen{
+  max-width:680px;
+  margin:60px auto;
+  padding:0 32px;
+  text-align:center;
+}
+.welcome-screen h2{
+  font-family:'Fraunces',serif;
+  font-size:clamp(1.8rem,4vw,2.6rem);
+  font-weight:600;
+  color:var(--text);
+  letter-spacing:-0.03em;
+  margin-bottom:14px;
+  line-height:1.15;
+}
+.welcome-screen h2 em{font-style:italic;color:var(--dt);}
+.welcome-screen p{
+  font-family:'Lora',serif;
+  font-size:1rem;
+  line-height:1.85;
+  color:var(--text-mid);
+  margin-bottom:14px;
+}
+.welcome-cats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin:32px 0;
+  text-align:left;
+}
+@media(max-width:480px){.welcome-cats{grid-template-columns:1fr;}}
+.cat-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+}
+.cat-card .cat-icon{font-size:1.5rem;margin-bottom:8px;}
+.cat-card h4{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:600;margin-bottom:4px;}
+.cat-card p{font-size:0.8rem;color:var(--text-light);line-height:1.5;margin:0;}
+.cat-card.active-cat{border-color:var(--dt-border);background:var(--dt-bg);}
+.cat-card.active-cat h4{color:var(--dt);}
+.start-btn{
+  background:var(--text);color:#fff;
+  border:none;border-radius:50px;
+  padding:14px 32px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.95rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.start-btn:hover{background:var(--dt);}
+.welcome-note{
+  font-size:0.75rem;
+  color:var(--text-light);
+  margin-top:14px;
+}
+
+/* ===================================================
+   MOBILE OVERLAY
+=================================================== */
+.overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.4);
+  z-index:150;
+}
+.overlay.show{display:block;}
+
+/* ===================================================
+   RESPONSIVE
+=================================================== */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{padding:0 16px;}
+  .hamburger{display:flex;}
+  .lesson-view{padding:24px 16px 60px;}
+  .ws-footer{flex-direction:column;align-items:stretch;}
+  .ws-save-btn{justify-content:center;}
+  .lesson-footer{flex-direction:column;align-items:stretch;}
+  .complete-btn,.next-btn{justify-content:center;}
+  .welcome-screen{padding:0 16px;margin:36px auto;}
+}
+
+/* ===================================================
+   ANIMATIONS
+=================================================== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.lesson-view{animation:fadeUp 0.28s ease;}
+.welcome-screen{animation:fadeUp 0.35s ease;}
+</style>
+</head>
+<body>
+
+<!-- MOBILE OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>The <span>DBT</span> Journey</h1>
+    <p>Skills for Real Life</p>
+  </div>
+  <div class="sidebar-progress">
+    <div class="progress-label">
+      <span>Your progress</span>
+      <span id="progText">0 / 9 lessons</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="module-label">Getting Started</div>
+    <div class="nav-item active" id="nav-welcome" onclick="goLesson('welcome')">
+      <div class="nav-dot active" id="dot-welcome">✦</div>
+      <div class="nav-text">
+        <div class="lesson-num">Intro</div>
+        <div class="lesson-name">Welcome & What is DBT?</div>
+      </div>
+    </div>
+
+    <div class="module-label" style="margin-top:8px;">🔥 Module 1 — Distress Tolerance</div>
+    <div class="nav-item" id="nav-dt1" onclick="goLesson('dt1')">
+      <div class="nav-dot dt-active" id="dot-dt1">1.1</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 1.1</div>
+        <div class="lesson-name">Understanding Distress</div>
+      </div>
+    </div>
+    <div class="nav-item" id="nav-dt2" onclick="goLesson('dt2')">
+      <div class="nav-dot dt-active" id="dot-dt2">1.2</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 1.2</div>
+        <div class="lesson-name">TIPP Skills</div>
+      </div>
+    </div>
+    <div class="nav-item" id="nav-dt3" onclick="goLesson('dt3')">
+      <div class="nav-dot dt-active" id="dot-dt3">1.3</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 1.3</div>
+        <div class="lesson-name">ACCEPTS & Self-Soothe</div>
+      </div>
+    </div>
+    <div class="nav-item" id="nav-dt4" onclick="goLesson('dt4')">
+      <div class="nav-dot dt-active" id="dot-dt4">1.4</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 1.4</div>
+        <div class="lesson-name">Radical Acceptance</div>
+      </div>
+    </div>
+
+    <div class="module-label" style="margin-top:8px;">🌿 Module 2 — Emotion Regulation</div>
+    <div class="nav-item er" id="nav-er1" onclick="goLesson('er1')">
+      <div class="nav-dot er-active" id="dot-er1">2.1</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 2.1</div>
+        <div class="lesson-name">How Emotions Work</div>
+      </div>
+    </div>
+    <div class="nav-item er" id="nav-er2" onclick="goLesson('er2')">
+      <div class="nav-dot er-active" id="dot-er2">2.2</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 2.2</div>
+        <div class="lesson-name">Check the Facts</div>
+      </div>
+    </div>
+    <div class="nav-item er" id="nav-er3" onclick="goLesson('er3')">
+      <div class="nav-dot er-active" id="dot-er3">2.3</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 2.3</div>
+        <div class="lesson-name">Opposite Action</div>
+      </div>
+    </div>
+    <div class="nav-item er" id="nav-er4" onclick="goLesson('er4')">
+      <div class="nav-dot er-active" id="dot-er4">2.4</div>
+      <div class="nav-text">
+        <div class="lesson-num">Lesson 2.4</div>
+        <div class="lesson-name">ABC PLEASE</div>
+      </div>
+    </div>
+
+    <div class="module-label" style="margin-top:8px;">Coming Soon</div>
+    <div class="nav-item" style="opacity:0.45;pointer-events:none;">
+      <div class="nav-dot">3</div>
+      <div class="nav-text"><div class="lesson-name">🧘 Mindfulness</div></div>
+      <div class="nav-tag soon">Soon</div>
+    </div>
+    <div class="nav-item" style="opacity:0.45;pointer-events:none;">
+      <div class="nav-dot">4</div>
+      <div class="nav-text"><div class="lesson-name">🤝 Interpersonal Skills</div></div>
+      <div class="nav-tag soon">Soon</div>
+    </div>
+  </nav>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-lesson" id="topbarTitle">Welcome to The DBT Journey</div>
+    <div class="topbar-actions">
+      <span class="topbar-badge intro" id="topbarBadge">Intro</span>
+    </div>
+  </div>
+
+  <!-- =========================================
+       WELCOME SCREEN
+  ========================================== -->
+  <div class="welcome-screen" id="view-welcome">
+    <h2>Learn the skills that help you <em>survive hard moments</em> and regulate your emotions</h2>
+    <p>Dialectical Behavior Therapy gives you a concrete toolkit for exactly this — and you don't need a therapist's office to learn it. Work through each lesson at your own pace, complete the guided worksheets, and build skills that actually stick.</p>
+    <div class="welcome-cats">
+      <div class="cat-card active-cat">
+        <div class="cat-icon">🔥</div>
+        <h4>Distress Tolerance</h4>
+        <p>Survive a crisis without making it worse. Your emotional fire escape.</p>
+      </div>
+      <div class="cat-card active-cat">
+        <div class="cat-icon">🌿</div>
+        <h4>Emotion Regulation</h4>
+        <p>Understand, influence, and change your emotions — not suppress them.</p>
+      </div>
+      <div class="cat-card" style="opacity:0.6">
+        <div class="cat-icon">🧘</div>
+        <h4>Mindfulness</h4>
+        <p>The foundation all DBT skills build on. Coming soon.</p>
+      </div>
+      <div class="cat-card" style="opacity:0.6">
+        <div class="cat-icon">🤝</div>
+        <h4>Interpersonal Skills</h4>
+        <p>Navigate relationships without destroying them. Coming soon.</p>
+      </div>
+    </div>
+    <button class="start-btn" onclick="goLesson('dt1')">Start with Lesson 1.1 →</button>
+    <div class="welcome-note">All worksheets are private — nothing leaves your browser. No account needed.</div>
+  </div>
+
+  <!-- =========================================
+       LESSON DT1: Understanding Distress
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-dt1">
+    <h2>Understanding Distress</h2>
+    <p class="lesson-intro">Before you can survive hard moments, you need to understand what is actually happening inside you when they hit — and why your usual instincts so often make things worse.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">What distress actually is</span>
+          <span class="obj-chip">Why the brain goes "offline"</span>
+          <span class="obj-chip">Pain vs. suffering</span>
+          <span class="obj-chip">Your personal distress patterns</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>What is distress?</h3>
+    <p>Distress isn't just "feeling bad." It's a state of overwhelming intensity where your brain's alarm system — the <strong>amygdala</strong> — has flooded your body with stress hormones and your capacity for rational thought has significantly dropped. You literally cannot think as clearly when you're in distress. This is not a character flaw. It's biology.</p>
+    <p>DBT calls this being in <strong>"emotion mind"</strong> — when feelings are driving every decision. The goal of distress tolerance is not to eliminate emotion mind. It's to stop it from making choices that make your situation worse.</p>
+
+    <div class="callout warning">
+      <div class="callout-icon">🔥</div>
+      <div class="callout-body">
+        <div class="c-label">Key Concept</div>
+        <p>When your house is on fire, you don't redecorate — you get out. Distress Tolerance skills are your fire escape. They're not about solving the problem. They're about surviving the moment so you can solve it later.</p>
+      </div>
+    </div>
+
+    <h3>Pain vs. Suffering</h3>
+    <p>DBT makes a crucial distinction: <strong>Pain is inevitable. Suffering is what we add to it.</strong> Pain is the event — the loss, the rejection, the fear. Suffering is the story we layer on top: <em>"This will never end. Why does this always happen to me? I can't handle this. This is unbearable."</em></p>
+    <p>That extra layer of fighting against reality is actually where most of our suffering lives. And that extra layer is something we can learn to work with.</p>
+
+    <div class="pull-quote">
+      <p>"Suffering = Pain + Non-Acceptance. The same pain, radically accepted, produces far less suffering."</p>
+      <cite>— Core DBT teaching principle</cite>
+    </div>
+
+    <h3>What makes distress escalate?</h3>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num dt-num">1</div>
+        <div class="step-body"><p><strong>Resistance.</strong> The more you fight a feeling ("stop, I don't want to feel this"), the more power it gains. Resistance amplifies emotion.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">2</div>
+        <div class="step-body"><p><strong>Catastrophizing.</strong> Telling yourself the intensity will last forever, or that it means something terrible about your future or your worth.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">3</div>
+        <div class="step-body"><p><strong>Acting on urges.</strong> The distress-driven impulse (send the angry text, have a drink, disappear) often creates consequences that add a second crisis on top of the first.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">4</div>
+        <div class="step-body"><p><strong>Isolation.</strong> Suffering completely alone, without context or support, intensifies emotional experience significantly.</p></div>
+      </div>
+    </div>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">✍️</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 1.1 — Your Distress Map</h4>
+          <p>Work through this step by step. Each question builds on the last. This isn't just reflection — it's data collection about your own patterns.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Describe a recent moment of intense distress — just the facts of what happened.</div>
+              <div class="step-why">We start with facts, not interpretations. What would a security camera have recorded? No feelings yet — just events.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I got a curt reply from my boss, then sat in traffic for 45 minutes.'  — Just the observable situation."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">How intense did the distress feel? Rate it from 1–10.</div>
+              <div class="step-why">This number is your SUDS score (Subjective Units of Distress). Naming the number creates just a little distance from the feeling — you're observing it, not just being it.</div>
+            </div>
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-row">
+              <input type="range" class="ws-slider" min="1" max="10" value="7" oninput="this.nextElementSibling.textContent=this.value">
+              <div class="slider-val">7</div>
+            </div>
+            <div class="slider-labels"><span>1 · Mild</span><span>5 · Significant</span><span>10 · Unbearable</span></div>
+          </div>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">Where did you feel it in your body?</div>
+              <div class="step-why">Emotions are physical. Your body holds distress — and learning where it shows up in you is the first step to working with it rather than against it.</div>
+            </div>
+          </div>
+          <div class="check-grid">
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Chest tightness</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Heart racing</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Shallow breathing</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Stomach / gut</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Jaw or teeth clenching</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Shaking or trembling</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Head pressure / headache</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Numbness or going blank</label></div>
+          </div>
+          <textarea class="ws-input" style="margin-top:10px;min-height:50px;" placeholder="Anything else? Describe it in your own words if none of the above quite fit..."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What story did your brain tell you about what this moment meant?</div>
+              <div class="step-why">This is where pain turns into suffering — the interpretation layer. Your brain rapidly generates meaning from events, often catastrophically. What did it say?</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'My boss hates me and I'm going to get fired.' Or 'Everything always falls apart for me.' What was the internal narration?"></textarea>
+          <div class="ws-tip"><strong>Notice:</strong> The story is not the same as the facts you described in Step 1. The gap between those two things is important — that's often where the extra suffering lives.</div>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">What did you do to cope — and did it help or make things worse?</div>
+              <div class="step-why">This is your current coping repertoire. We're not judging it — we're mapping it honestly, because that's how we figure out what to replace or supplement.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I called a friend and vented — that helped.' or 'I drank two glasses of wine and then felt worse.' Be honest."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">6</div>
+            <div class="ws-step-info">
+              <div class="step-q">Looking back: what is one thing you wish you had done differently in that moment?</div>
+              <div class="step-why">This isn't self-criticism — it's identifying your own gap. Where you want to be versus where you are now is the exact space DBT skills fill.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I wish I had stepped away before responding.' Or 'I wish I had done something physical to burn off the adrenaline.'"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">Your answers stay in your browser only. This is for you — take your time.</div>
+        <button class="ws-save-btn dt-btn" onclick="saveWS(this, 'ws-done-dt1')">Save worksheet ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-dt1">✓ Worksheet saved. This self-knowledge is your foundation — everything in DBT builds from here. 🌊</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-dt1" onclick="completeLesson('dt1',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('dt2')">Next: TIPP Skills →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON DT2: TIPP
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-dt2">
+    <h2>TIPP Skills — Changing Your Body Chemistry</h2>
+    <p class="lesson-intro">When distress is at its peak, talking yourself down through logic often doesn't work. Your thinking brain is too overwhelmed. TIPP bypasses thought entirely and works directly on your biology.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">Why logic fails in crisis</span>
+          <span class="obj-chip">Temperature technique</span>
+          <span class="obj-chip">Intense exercise</span>
+          <span class="obj-chip">Paced breathing (interactive)</span>
+          <span class="obj-chip">Progressive relaxation</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Why TIPP works when thinking doesn't</h3>
+    <p>At peak distress, your prefrontal cortex (rational thought) is partially offline. You cannot think your way out of a flooded nervous system in that moment. TIPP works <strong>physiologically</strong> — it changes the chemical state of your body, which then allows your thinking brain to come back online. Only then can you use other skills.</p>
+
+    <div class="def-box">
+      <div class="def-head">TIPP — The Four Strategies</div>
+      <div class="def-body"><p><strong>T</strong> — Temperature &nbsp;·&nbsp; <strong>I</strong> — Intense Exercise &nbsp;·&nbsp; <strong>P</strong> — Paced Breathing &nbsp;·&nbsp; <strong>P</strong> — Progressive Muscle Relaxation</p></div>
+    </div>
+
+    <h3>T — Temperature (cold water)</h3>
+    <p>Placing your face in cold water while holding your breath triggers the <strong>mammalian dive reflex</strong> — one of the most powerful natural calming mechanisms your body has. Your heart rate drops dramatically within 30 seconds. This is not placebo. It's hard physiology and it works whether you believe in it or not.</p>
+    <div class="callout tip">
+      <div class="callout-icon">🧊</div>
+      <div class="callout-body">
+        <div class="c-label">How to do it</div>
+        <p>Fill a bowl with cold water (add ice if possible). Take a breath, dip your face in for 30–60 seconds. Or hold an ice pack or bag of frozen peas to your face and cheekbones. Or splash very cold water on your wrists and the back of your neck. <strong>The colder, the more effective.</strong></p>
+      </div>
+    </div>
+
+    <h3>I — Intense Exercise</h3>
+    <p>Distress floods your system with adrenaline and cortisol — stress hormones that prime you to fight or run. <strong>Give your body what it's prepared for.</strong> Even 5 minutes of intense movement metabolizes those hormones. Sprint up stairs. Do jumping jacks until you're breathless. Punch a pillow. Your body will chemically process the distress rather than just holding it.</p>
+
+    <h3>P — Paced Breathing</h3>
+    <p>Your breath is one of the only automatic functions of your nervous system you can consciously control. Making your <strong>exhale longer than your inhale</strong> directly activates the parasympathetic nervous system — your body's "rest and digest" state. Do this now:</p>
+
+    <div class="breathing-widget">
+      <div class="breath-ring" id="br">Ready</div>
+      <div class="breath-phase-label" id="bLabel">Press Start when you're ready</div>
+      <div class="breath-sub" id="bSub">Box breathing · 4 counts each · 4 rounds</div>
+      <button class="breath-btn" id="bBtn" onclick="startBreath()">Start</button>
+    </div>
+
+    <h3>P — Progressive Muscle Relaxation</h3>
+    <p>Physical tension accumulates in your body during distress — often without you noticing. PMR uses a simple trick: <strong>deliberately tense a muscle group for 5 seconds, then release completely.</strong> The contrast makes the release feel profound, and teaches your nervous system the difference between tension and relaxation.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num dt-num">1</div>
+        <div class="step-body"><p><strong>Feet & calves.</strong> Curl your toes tightly. Hold 5 seconds. Release completely. Notice the warmth and heaviness of relaxation flowing in.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">2</div>
+        <div class="step-body"><p><strong>Thighs & stomach.</strong> Squeeze your thighs together, tighten your core. Hold 5 seconds. Release. Breathe out slowly.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">3</div>
+        <div class="step-body"><p><strong>Hands & arms.</strong> Make fists, tighten biceps. Hold 5 seconds. Release — let your arms go heavy.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">4</div>
+        <div class="step-body"><p><strong>Shoulders & face.</strong> Shrug shoulders to ears, scrunch your face. Hold 5 seconds. Drop shoulders, release face completely.</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num dt-num">5</div>
+        <div class="step-body"><p><strong>Whole body.</strong> Tense everything at once. Hold 5 seconds. Then release with one long exhale. Repeat 2–3 times.</p></div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <tr><th>Situation</th><th>Best TIPP strategy</th></tr>
+      <tr><td>Panic attack or anxiety spike</td><td><strong>Temperature</strong> + Paced Breathing</td></tr>
+      <tr><td>Rage / intense frustration</td><td><strong>Intense Exercise</strong></td></tr>
+      <tr><td>Can't sleep, racing thoughts</td><td><strong>PMR</strong> + Paced Breathing</td></tr>
+      <tr><td>General emotional flooding</td><td>Paced Breathing → then Temperature</td></tr>
+      <tr><td>Dissociation / numbness</td><td><strong>Temperature</strong> (cold brings you back to your body)</td></tr>
+    </table>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🏃</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 1.2 — TIPP Practice Log</h4>
+          <p>This worksheet is designed to be filled in AFTER trying each technique in a real moment. Come back to it across this week as situations arise.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Try TEMPERATURE this week. Describe what you did and when.</div>
+              <div class="step-why">The specifics matter — what was your distress level before vs. after? How cold was the water? How long did you hold it? Detail helps you refine the technique.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'Tuesday after an argument, I held ice against my face for 45 seconds. Distress was an 8 before, maybe a 5 after. The shift was real and fast.'"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">Try INTENSE EXERCISE for 3–5 minutes when stressed. What happened?</div>
+              <div class="step-why">Be specific about what exercise, how long, and what changed (if anything) in your body and mood afterward. Not all bodies respond the same way.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., '20 jumping jacks + ran up 3 flights of stairs. Heart was pounding. By the time I caught my breath, the rage had gone from an 8 to a 4.'"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">Use the breathing exercise above (or on your own) at least twice this week. What did you notice?</div>
+              <div class="step-why">Breathing practice is cumulative — the more you do it when calm, the more accessible it is when you're not. Notice any resistance ("this isn't working") and write that down too.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Round 1 (when): ... What you noticed... &#10;Round 2 (when): ... What you noticed..."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">Which TIPP strategy worked best for YOU, and what was your distress before vs. after?</div>
+              <div class="step-why">Everyone's nervous system is different. Your job is to find which techniques your body responds to — not to follow the "correct" answer.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'Temperature was a 9→5. Exercise was a 7→4. Breathing only got me to a 6 — maybe I need more practice.'"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is your personal "TIPP plan" for your next crisis moment? Be specific.</div>
+              <div class="step-why">The time to plan is NOT during the crisis. If you have a plan ready, you can execute it instead of improvising while overwhelmed.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'If I feel above a 7: immediately go to bathroom, run cold water on wrists, do 4 rounds of box breathing, then reassess before responding to anyone.'"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">Come back to fill in Steps 1–3 after trying each skill in real life this week.</div>
+        <button class="ws-save-btn dt-btn" onclick="saveWS(this,'ws-done-dt2')">Save worksheet ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-dt2">✓ Saved. Your TIPP plan is ready. The goal is to make it automatic — practice builds access in crisis. 🔥</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-dt2" onclick="completeLesson('dt2',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('dt3')">Next: ACCEPTS & Self-Soothe →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON DT3: ACCEPTS & SELF-SOOTHE
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-dt3">
+    <h2>ACCEPTS & Self-Soothe — Intentional Distraction</h2>
+    <p class="lesson-intro">Distraction has a bad reputation — but DBT makes a crucial distinction between avoidance that makes things worse, and strategic distraction that buys you time for the intensity to pass. These two skill sets are your toolkit for the latter.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">When distraction helps vs. hurts</span>
+          <span class="obj-chip">7 ACCEPTS categories</span>
+          <span class="obj-chip">Self-Soothe with 5 senses</span>
+          <span class="obj-chip">Build your personal toolkit</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Healthy distraction vs. avoidance</h3>
+    <p>The key question to ask: <em>Am I distracting to get through this moment — so I can return to the problem later — or am I avoiding something I need to face entirely?</em> If it's the former, distraction is a legitimate and effective skill. If it's the latter, it's avoidance, and it typically makes things worse over time.</p>
+
+    <div class="callout gold">
+      <div class="callout-icon">⏱️</div>
+      <div class="callout-body">
+        <div class="c-label">The 90-minute window</div>
+        <p>Research shows that the peak of a strong emotion, if you don't actively feed it (by ruminating, catastrophizing, or acting on urges), typically lasts between 90 seconds and 20 minutes. Distraction buys you that time for the wave to pass on its own.</p>
+      </div>
+    </div>
+
+    <h3>ACCEPTS — 7 categories of intentional distraction</h3>
+    <div class="skill-grid">
+      <div class="skill-card"><div class="sk-letter dt-text">A</div><h5>Activities</h5><p>Something that genuinely absorbs your attention — not passive scrolling, but actual engagement. Cooking, cleaning, a puzzle, music, gaming.</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">C</div><h5>Contributing</h5><p>Do something for someone else. Helping others shifts focus outward and activates purpose and connection — powerful antidotes to distress.</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">C</div><h5>Comparisons</h5><p>Compare your situation to a time when things were harder, or others facing greater hardship. Not to dismiss your pain — to gain perspective.</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">E</div><h5>Opposite Emotions</h5><p>Generate a different emotion — a funny video, uplifting music, something moving. Emotions compete; a different one can displace distress temporarily.</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">P</div><h5>Pushing Away</h5><p>Mentally place the problem in a box, on a shelf, behind a closed door. Tell yourself: "I will deal with this — just not this minute."</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">T</div><h5>Thoughts</h5><p>Redirect your mind with puzzles, counting, reading, math, trivia. Any focused mental task that occupies the "worry bandwidth" of your brain.</p></div>
+      <div class="skill-card"><div class="sk-letter dt-text">S</div><h5>Sensations</h5><p>Strong but safe physical input: hold ice, smell something intense, eat something sour or spicy. Sensory contrast interrupts emotional spiraling.</p></div>
+    </div>
+
+    <h3>Self-Soothe with the five senses</h3>
+    <p>Where ACCEPTS distracts you from distress, Self-Soothe asks a different question: <em>how can I be kind and gentle with myself right now?</em> Think of it as how you'd care for someone you love who was in pain — warm, sensory, comforting.</p>
+    <table class="data-table">
+      <tr><th>Sense</th><th>Ideas to try</th></tr>
+      <tr><td>👁️ Vision</td><td>Step outside and look at something beautiful. Watch a candle flame. Scroll through photos of places you love.</td></tr>
+      <tr><td>👂 Hearing</td><td>Music that matches where you want to feel, not where you are. Nature sounds. A favorite podcast. Silence.</td></tr>
+      <tr><td>👃 Smell</td><td>Lavender oil, fresh coffee, baked goods, your favorite lotion. Smell reaches the brain faster than any other sense.</td></tr>
+      <tr><td>👅 Taste</td><td>Make a warm drink and drink it slowly. A piece of chocolate, eaten mindfully. Anything savored rather than consumed.</td></tr>
+      <tr><td>✋ Touch</td><td>A weighted blanket, a warm shower, petting an animal, smooth stones, soft fabric. The body calms through safe, pleasant touch.</td></tr>
+    </table>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🧰</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 1.3 — Build Your Personal Distress Toolkit</h4>
+          <p>Build this NOW, when you're calm — not when you're in crisis. A pre-made plan is dramatically more accessible in a hard moment than improvising from scratch.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">From the ACCEPTS list, which 3–4 categories feel most natural for you?</div>
+              <div class="step-why">Not all 7 will resonate equally. Identify your 3–4 strongest categories — those are your core ACCEPTS toolkit.</div>
+            </div>
+          </div>
+          <div class="check-grid">
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Activities</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Contributing</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Comparisons</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Opposite Emotions</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Pushing Away</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Thoughts</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label>Sensations</label></div>
+          </div>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">List 3 specific activities that genuinely absorb your attention (not passive scrolling).</div>
+              <div class="step-why">"Do an activity" is too vague to be useful in a crisis. List the specific things — the ones you'd actually do.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="1. ________________&#10;2. ________________&#10;3. ________________"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">Design your Self-Soothe kit — one item per sense that works for you.</div>
+              <div class="step-why">Personalizing this to your actual preferences is what makes it work. Generic lists don't help when you're overwhelmed. Your specific list does.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Vision: _____________&#10;Hearing: _____________&#10;Smell: _____________&#10;Taste: _____________&#10;Touch: _____________"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is the one thing you are most tempted to do when distressed — that actually makes things worse?</div>
+              <div class="step-why">Naming your default unhelpful coping response is critical. You can't interrupt a pattern you haven't identified. This is information, not self-judgment.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I drink. I send aggressive texts. I binge eat. I disappear for days.' Be truthful — this is private."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">Write your personal crisis distraction plan — the sequence you'll follow next time distress hits above a 7.</div>
+              <div class="step-why">Having a written sequence is the difference between "I know I should do something" and actually doing it. Make it concrete and ordered.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Step 1: ________________________&#10;Step 2: ________________________&#10;Step 3: ________________________&#10;&#10;If still above a 5 after these: ________________________"></textarea>
+          <div class="ws-tip"><strong>Homework:</strong> Screenshot or write this sequence somewhere accessible on your phone. Your crisis plan is useless if you can't find it when you need it.</div>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">This plan becomes your first line of defense in hard moments.</div>
+        <button class="ws-save-btn dt-btn" onclick="saveWS(this,'ws-done-dt3')">Save my toolkit ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-dt3">✓ Toolkit saved. You now have a personalized crisis plan ready before you need it. 🧰</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-dt3" onclick="completeLesson('dt3',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('dt4')">Next: Radical Acceptance →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON DT4: RADICAL ACCEPTANCE
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-dt4">
+    <h2>Radical Acceptance — The Most Powerful Skill</h2>
+    <p class="lesson-intro">If you learn only one skill from this entire course, make it this one. Radical Acceptance doesn't remove pain — it removes the suffering you add on top of it. This lesson takes time. Give it the time it deserves.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">What acceptance actually means</span>
+          <span class="obj-chip">What it does NOT mean</span>
+          <span class="obj-chip">Willingness vs. willfulness</span>
+          <span class="obj-chip">How to practice it step by step</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>What Radical Acceptance is — and isn't</h3>
+    <p>Radical Acceptance is the complete and total acknowledgment of reality exactly as it is — without fighting it, judging it, or wishing it were different. The word "radical" means all the way, not halfway, not conditionally.</p>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="c-label">Critical clarification</div>
+        <p>Acceptance is NOT approval. It is NOT giving up. It is NOT saying what happened was okay or deserved. It is NOT passive resignation. It is simply this: <em>this is what is true right now.</em> You don't have to like it. You just stop fighting the fact of it.</p>
+      </div>
+    </div>
+
+    <h3>The suffering equation</h3>
+    <p>DBT teaches: <strong>Suffering = Pain + Non-Acceptance.</strong> Pain is what happens to you. Non-acceptance is the mental arguing against reality — the "this shouldn't be happening," the "why me," the constant inner battle with what is already true. That battle is almost always the larger source of your suffering — not the original event.</p>
+    <p>Here's the insight: fighting reality has never once changed reality. It only delays your ability to respond effectively to what's actually there.</p>
+
+    <div class="pull-quote">
+      <p>"You can't change what you won't first accept is real."</p>
+      <cite>— Core principle of Radical Acceptance</cite>
+    </div>
+
+    <h3>Willingness vs. Willfulness</h3>
+    <p><strong>Willfulness</strong> says: "Reality must bend to my will. I refuse to accept this. This shouldn't be this way." It keeps you stuck, exhausted, and suffering. <strong>Willingness</strong> says: "I don't like this, and I am open to dealing with what is actually here." It's not defeat — it's the doorway to effective action.</p>
+
+    <div class="callout tip">
+      <div class="callout-icon">🌊</div>
+      <div class="callout-body">
+        <div class="c-label">Acceptance is a practice, not a decision</div>
+        <p>You don't accept something once and then you're done. Acceptance happens over and over — sometimes moment to moment. You'll resist, slip back into fighting reality, and return to acceptance again. Each return IS the skill. There is no "finally getting there."</p>
+      </div>
+    </div>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🌊</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 1.4 — Radical Acceptance Practice</h4>
+          <p>This is the most important worksheet in Module 1. Take your time. Work through each step fully before moving to the next. This process is the practice.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Name the reality you are currently refusing to accept.</div>
+              <div class="step-why">Be specific. Not "my life is hard" — but the actual fact, the specific thing. Vague non-acceptance is harder to work with than a named one.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'My relationship ended and it isn't coming back.' Or 'I have chronic pain and it may not improve.' Or 'I was passed over for the promotion.' State the fact plainly."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">What thoughts are fighting this reality? Write them out.</div>
+              <div class="step-why">These are your non-acceptance thoughts. Getting them onto the page makes them visible — which is the first step to choosing not to be controlled by them.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'This shouldn't have happened.' 'It isn't fair.' 'If I'd done X, this wouldn't have occurred.' 'I can't accept this.' Write all of them."></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">What has NOT accepting this cost you? Be honest about the price.</div>
+              <div class="step-why">Non-acceptance has real costs — energy, relationships, ability to move forward, physical health, time. Naming the cost makes the case for acceptance concrete, not just theoretical.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I've spent 6 months ruminating instead of healing.' 'I've pushed away people who tried to support me.' 'I can't focus on anything else.' What has it cost you?"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What caused this situation? (Not blame — just causes.)</div>
+              <div class="step-why">Radical Acceptance includes accepting that everything that happened had causes — choices, circumstances, timing, other people's actions. You don't have to agree with the causes. Just acknowledge they existed.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'She chose to leave because of her own fears and our incompatibility.' 'The company restructured for financial reasons.' What were the causes, as neutrally as you can state them?"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">Write your Radical Acceptance statement — in your own voice.</div>
+              <div class="step-why">This is not about being okay with what happened. It's about stating what is true, while acknowledging your pain. The phrasing matters. Write it until it feels honest, not forced.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Start with: 'It is what it is. I accept that...' — then finish it. Write it in the words you would actually say to yourself."></textarea>
+          <div class="ws-tip"><strong>Important:</strong> Notice the difference between "I accept this because it's okay" (not the goal) and "I accept this because it's real, and fighting real things only hurts me" (the goal).</div>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">6</div>
+            <div class="ws-step-info">
+              <div class="step-q">What becomes possible if you truly accept this? What could you do or feel that you currently can't?</div>
+              <div class="step-why">This is the practical argument for acceptance — not just relief from suffering, but the actions and life that become available once you stop fighting what's already true.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I could start rebuilding.' 'I could let myself grieve without guilt.' 'I could stop planning for a future that isn't coming.' What opens up?"></textarea>
+        </div>
+
+        <div class="ws-step dt">
+          <div class="ws-step-head">
+            <div class="ws-step-num">7</div>
+            <div class="ws-step-info">
+              <div class="step-q">How will you practice acceptance when the non-acceptance thoughts come back?</div>
+              <div class="step-why">They will come back. This is not a one-time exercise. Write down what you will do when you find yourself fighting reality again — your return-to-acceptance strategy.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I'll read my acceptance statement out loud.' 'I'll say: this is what is true right now, and I can survive it.' 'I'll go for a walk and let myself feel the grief without arguing with it.'"></textarea>
+          <div class="ws-tip"><strong>Homework:</strong> Read your Step 5 acceptance statement aloud once a day for the next 7 days. Notice what shifts, what resists, what loosens. Journal what comes up.</div>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">This is profound work. Return to it as often as you need to.</div>
+        <button class="ws-save-btn dt-btn" onclick="saveWS(this,'ws-done-dt4')">Save worksheet ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-dt4">✓ Saved. You've completed Module 1: Distress Tolerance. That's real work. 🌊</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-dt4" onclick="completeLesson('dt4',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('er1')">Start Module 2: Emotion Regulation →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON ER1: HOW EMOTIONS WORK
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-er1">
+    <h2>How Emotions Actually Work</h2>
+    <p class="lesson-intro">Emotions are not the enemy. They're an information system — one that evolved because it served a purpose. Understanding that system is the starting point for being able to influence it.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">What emotions are for</span>
+          <span class="obj-chip">The emotion cycle</span>
+          <span class="obj-chip">Primary vs. secondary emotions</span>
+          <span class="obj-chip">Your emotional vocabulary</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Emotions are information, not problems</h3>
+    <p>Every emotion you experience evolved because it served a survival function. <strong>Fear</strong> protected you from danger. <strong>Anger</strong> defended your boundaries. <strong>Sadness</strong> signaled loss and activated support-seeking. <strong>Shame</strong> maintained belonging in social groups. These are not malfunctions — they are ancient, sophisticated systems.</p>
+    <p>The problem isn't having emotions. It's when they become disproportionate to the situation, last too long, lead to harmful actions, or when you have no idea what you're feeling or why.</p>
+
+    <table class="data-table">
+      <tr><th>Emotion</th><th>Original function</th><th>What it signals</th></tr>
+      <tr><td><strong>Fear</strong></td><td>Protect from danger</td><td>"Something may threaten my safety"</td></tr>
+      <tr><td><strong>Anger</strong></td><td>Defend against injustice</td><td>"A boundary has been violated"</td></tr>
+      <tr><td><strong>Sadness</strong></td><td>Process loss; seek connection</td><td>"Something important to me is gone"</td></tr>
+      <tr><td><strong>Shame</strong></td><td>Maintain social belonging</td><td>"I may have damaged my place in the group"</td></tr>
+      <tr><td><strong>Guilt</strong></td><td>Repair wrongdoing</td><td>"I've violated my own values"</td></tr>
+      <tr><td><strong>Joy</strong></td><td>Reinforce what's good</td><td>"This is nourishing — seek more of this"</td></tr>
+    </table>
+
+    <h3>The emotion cycle — where you can intervene</h3>
+    <p>Every emotion follows a predictable sequence. Here's the critical insight: <strong>you can intervene at any point in this cycle.</strong> You can't always control the trigger — but you can work with your interpretation, your physical response, whether you act on the urge, and the aftermath.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num er-num">1</div>
+        <div class="step-body"><p><strong>Prompt event.</strong> Something happens inside or outside you. (Intervention point: minimize exposure to known triggers when possible.)</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num er-num">2</div>
+        <div class="step-body"><p><strong>Interpretation.</strong> Your brain assigns meaning — fast, often below awareness. (Intervention point: Check the Facts, which you'll learn in the next lesson.)</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num er-num">3</div>
+        <div class="step-body"><p><strong>Body response.</strong> Physiological changes — heart rate, muscle tension, breathing. (Intervention point: TIPP skills from Module 1.)</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num er-num">4</div>
+        <div class="step-body"><p><strong>Action urge.</strong> The emotion pushes you toward a behavior — flee, fight, freeze, reach out, withdraw. (Intervention point: Opposite Action, Lesson 2.3.)</p></div>
+      </div>
+      <div class="step-item">
+        <div class="step-num er-num">5</div>
+        <div class="step-body"><p><strong>Aftermath.</strong> What follows your action — including secondary emotions about how you responded. (Intervention point: self-compassion, problem-solving.)</p></div>
+      </div>
+    </div>
+
+    <h3>Primary vs. secondary emotions</h3>
+    <p>A <strong>primary emotion</strong> is your first, direct response. A <strong>secondary emotion</strong> is what you feel <em>about</em> your first feeling. For example: feeling <em>scared</em> (primary), then feeling <em>ashamed for feeling scared</em> (secondary). Many people spend most of their emotional energy fighting secondary emotions without ever addressing the original feeling underneath.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="c-label">Common secondary emotion patterns</div>
+        <p>Anger about feeling sad · Shame about feeling angry · Anxiety about feeling anxious · Guilt about feeling happy · Fear about feeling vulnerable. Do any of these sound familiar?</p>
+      </div>
+    </div>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🎨</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 2.1 — Your Emotional Landscape</h4>
+          <p>Emotional literacy — the ability to name what you're feeling — is the prerequisite for regulating it. You cannot work with what you cannot identify.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Select all the emotions you experience regularly — be honest, not aspirational.</div>
+              <div class="step-why">Most people experience a narrower range than they think (because they avoid certain emotions) or a wider range than they've named (because they lump everything into "stressed" or "bad").</div>
+            </div>
+          </div>
+          <div class="emotion-grid">
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😨 Fear</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😠 Anger</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😢 Sadness</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😊 Joy</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🥹 Shame</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😬 Anxiety</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🤢 Disgust</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🫂 Loneliness</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😤 Frustration</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">💔 Grief</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🌟 Pride</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🤍 Love</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😌 Relief</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😔 Hopelessness</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">⚡ Overwhelm</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🤔 Confusion</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🥳 Excitement</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">😐 Numbness</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">🫤 Disappointment</div>
+            <div class="emo-chip" onclick="this.classList.toggle('sel')">💛 Gratitude</div>
+          </div>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">Which emotion is hardest for you to sit with — the one you most want to escape or avoid?</div>
+              <div class="step-why">The emotion we avoid most is usually the one that drives our most problematic behaviors. Knowing it is the beginning of working with it rather than being controlled by it.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Name the emotion, and describe what you typically do to get away from it..."></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">Trace a recent emotion through the 5-step cycle: prompt → interpretation → body → urge → aftermath.</div>
+              <div class="step-why">Running a real experience through this model builds your ability to see the structure of your emotional reactions — which reveals where you can intervene next time.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" style="min-height:130px;" placeholder="Prompt event: ________________&#10;My interpretation: ________________&#10;Body sensations: ________________&#10;My action urge (what I wanted to do): ________________&#10;What I actually did and the aftermath: ________________"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">Can you identify a secondary emotion pattern you carry? (Feeling X about feeling Y)</div>
+              <div class="step-why">Recognizing your secondary emotion patterns is powerful — it means you can catch yourself adding suffering on top of an already difficult primary emotion.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I feel ashamed when I feel scared.' 'I feel anxious about feeling angry.' 'I feel guilty when I feel happy.' What's your pattern?"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">Emotional literacy is the foundation of everything that follows in this module.</div>
+        <button class="ws-save-btn" onclick="saveWS(this,'ws-done-er1')">Save worksheet ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-er1">✓ Saved. You're building emotional literacy — one of the most valuable skills there is. 🌿</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-er1" onclick="completeLesson('er1',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('er2')">Next: Check the Facts →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON ER2: CHECK THE FACTS
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-er2">
+    <h2>Check the Facts</h2>
+    <p class="lesson-intro">Your emotions feel 100% true — but they're not always based on what's actually happening. They're based on your brain's interpretation of what's happening. Those two things are often very different.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">Facts vs. interpretations</span>
+          <span class="obj-chip">Common thinking distortions</span>
+          <span class="obj-chip">The 5-step Check the Facts process</span>
+          <span class="obj-chip">When the emotion IS justified</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Emotions aren't always accurate</h3>
+    <p>Our emotions are shaped by our history, our nervous system, our deepest fears, and our core beliefs about ourselves — not just by objective facts. A person with a history of abandonment might feel panic when a friend is slow to reply. A person with a history of criticism might feel shame from neutral feedback. The emotion is real. But it may not be accurately representing what's actually happening right now.</p>
+
+    <div class="callout warning">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="c-label">Common thinking distortions that generate emotional misfires</div>
+        <p><strong>Catastrophizing</strong> ("this is the worst thing ever") · <strong>Mind-reading</strong> ("they hate me") · <strong>Fortune-telling</strong> ("this will never improve") · <strong>All-or-nothing</strong> ("I always fail") · <strong>Emotional reasoning</strong> ("I feel bad, so something must be wrong") · <strong>Personalizing</strong> ("this is about me")</p>
+      </div>
+    </div>
+
+    <h3>The Check the Facts process</h3>
+    <div class="def-box">
+      <div class="def-head">Example — Checking the Facts</div>
+      <div class="def-body"><p><strong>Event:</strong> Friend hasn't responded to my message in two days.<br><strong>My emotion:</strong> Intense hurt and anger (8/10).<br><strong>My interpretation:</strong> "She doesn't care about me. I'm not a priority."<br><strong>The actual facts:</strong> She hasn't replied. That's all I know.<br><strong>Other explanations:</strong> She's overwhelmed. She's going through something. She forgot. She's sick.<br><strong>Does the emotion fit the facts?</strong> Some hurt, maybe. Intense anger and conclusions about my worth? No — those fit the interpretation, not the facts.</p></div>
+    </div>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🔍</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 2.2 — Check the Facts (Guided)</h4>
+          <p>Work through a real situation. Each step is designed to gradually separate what happened from what your brain said it means. Follow the sequence — don't skip ahead.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Name the emotion and rate its intensity.</div>
+              <div class="step-why">Be as specific as possible — not just "upset" but "humiliated" or "terrified." Specificity matters because different emotions require different responses.</div>
+            </div>
+          </div>
+          <input class="ws-input" placeholder="Emotion: ______________________   Intensity (1–10): _____">
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">Describe the prompt event — ONLY observable facts. No interpretations yet.</div>
+              <div class="step-why">Imagine you're a neutral journalist reporting what happened. What could be verified? What actually occurred, stripped of all meaning and assumption?</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'My manager said "we need to talk" in front of two coworkers.' Just the observable event. Not what you think it means."></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">Now write your interpretation — what your brain said this means.</div>
+              <div class="step-why">This is the story layer. Notice how much your brain added to the facts from Step 2. This gap is where emotional amplification lives.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'I'm going to be fired. She's been building a case against me. Everyone thinks I'm incompetent. I'm about to lose everything.'"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What thinking distortions might be present? Check all that apply.</div>
+              <div class="step-why">Naming the distortion is not the same as dismissing your feelings. It's seeing the pattern that's amplifying them beyond what the facts support.</div>
+            </div>
+          </div>
+          <div class="check-items">
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>Catastrophizing</strong> — assuming the worst possible outcome</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>Mind-reading</strong> — assuming you know what others think</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>Fortune-telling</strong> — predicting a bad future with certainty</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>All-or-nothing</strong> — seeing things as total success or total failure</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>Emotional reasoning</strong> — "I feel it, therefore it must be true"</label></div>
+            <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><label><strong>Personalizing</strong> — assuming things are about or caused by you</label></div>
+          </div>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">List 2–3 other interpretations of the same facts that are equally (or more) plausible.</div>
+              <div class="step-why">This is not toxic positivity. It's recognizing that your brain jumped to one interpretation when multiple exist. The goal is accuracy, not optimism.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="1. ________________&#10;2. ________________&#10;3. ________________"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">6</div>
+            <div class="ws-step-info">
+              <div class="step-q">Given ONLY the facts (not the interpretations) — is your emotion justified? Rate intensity again.</div>
+              <div class="step-why">This is the key question. If yes — your emotion fits the situation and you may need to act on it wisely. If no — you can use Opposite Action (next lesson) to change it.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Is the emotion justified by the facts? _____ New intensity (1–10): _____ Why: ________________"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">Practice this weekly — even when not in crisis. Pattern recognition builds with repetition.</div>
+        <button class="ws-save-btn" onclick="saveWS(this,'ws-done-er2')">Save worksheet ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-er2">✓ Saved. Each time you Check the Facts, you're rewiring your interpretive patterns. 🌿</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-er2" onclick="completeLesson('er2',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('er3')">Next: Opposite Action →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON ER3: OPPOSITE ACTION
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-er3">
+    <h2>Opposite Action</h2>
+    <p class="lesson-intro">You've checked the facts and your emotion doesn't fit the situation. Now what? Opposite Action is one of the most research-validated techniques in DBT — and it works from the outside in.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">How actions change emotions</span>
+          <span class="obj-chip">Opposite actions by emotion</span>
+          <span class="obj-chip">The "all the way" requirement</span>
+          <span class="obj-chip">When NOT to use it</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Acting changes feeling — not just the other way around</h3>
+    <p>Most people believe: <em>when I feel better, I'll act better.</em> DBT reverses this: <strong>when you act differently, you will feel differently.</strong> This is not just philosophy — it's backed by extensive neuroscience research on behavioral activation and emotional feedback loops.</p>
+    <p>When you act afraid (avoid), fear grows. When you act capable despite fear (approach), fear decreases over time. Your brain updates its emotional assessment based on evidence from your behavior.</p>
+
+    <table class="data-table">
+      <tr><th>If you feel...</th><th>Action urge</th><th>Opposite action</th></tr>
+      <tr><td><strong>Fear / Anxiety</strong></td><td>Avoid the feared thing</td><td>Approach gradually and repeatedly</td></tr>
+      <tr><td><strong>Depression / Sadness</strong></td><td>Isolate, withdraw, stay in bed</td><td>Get active, engage, reach out</td></tr>
+      <tr><td><strong>Shame</strong></td><td>Hide, become small, disappear</td><td>Share with a safe person; hold your head up</td></tr>
+      <tr><td><strong>Anger</strong></td><td>Attack, argue, punish</td><td>Avoid contact temporarily; do something kind</td></tr>
+      <tr><td><strong>Guilt</strong></td><td>Punish yourself continuously</td><td>Repair what can be repaired; then release</td></tr>
+      <tr><td><strong>Loneliness</strong></td><td>Withdraw further</td><td>Reach out — even briefly, even when it's hard</td></tr>
+    </table>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="c-label">Critical: when NOT to use Opposite Action</div>
+        <p>Only use Opposite Action when the emotion does NOT fit the facts. If you're genuinely in danger — approach is wrong. If your anger is justified because your rights were violated — acting kind is wrong. <strong>Check the Facts first. Then decide.</strong></p>
+      </div>
+    </div>
+
+    <h3>The "all the way" requirement</h3>
+    <p>This is what people miss: Opposite Action only works if you do it <strong>completely</strong>. Going to a social event while standing in the corner with crossed arms, visibly miserable, is not Opposite Action. It's going through the motions. The technique requires acting all the way — in your body language, facial expression, and level of engagement — as if you already feel differently. The emotion follows the action, not vice versa.</p>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🔄</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 2.3 — Opposite Action Planning</h4>
+          <p>This worksheet works best for a specific emotion you're currently experiencing or one that comes up repeatedly for you. Be concrete — vague plans don't execute in emotional moments.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">What emotion are you working with, and does it fit the facts?</div>
+              <div class="step-why">Opposite Action is only appropriate when the emotion doesn't fit. Confirm you've checked the facts first.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Emotion: _____________  Intensity: ___/10&#10;Did I check the facts? Yes / No&#10;Does this emotion fit the actual situation? Yes / No — Because: ________________"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is your action urge — what does this emotion make you want to do?</div>
+              <div class="step-why">Be honest. The urge might be embarrassing to admit — but you need to know exactly what you're countering.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'Cancel the plans. Stay in bed. Stop reaching out to anyone. Push them away first.'"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is the specific opposite action? Describe it in enough detail that you could execute it right now.</div>
+              <div class="step-why">"Be more social" is too vague. "Text Maya to meet for coffee Saturday at 10am, and if she says yes, go even if I don't want to" is actionable.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'Go to the dinner. When I arrive, make direct eye contact, smile genuinely, ask one person about their week. Stay for at least 45 minutes.'"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What "all the way" looks like for you — body language, face, engagement level.</div>
+              <div class="step-why">Going through the motions doesn't work. What does fully committing to the opposite action look like physically, not just behaviorally?</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="e.g., 'Shoulders back, not checking my phone, genuinely listening rather than planning my exit, allowing myself to laugh.'"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">After trying it — what happened to the emotion? Fill this in after.</div>
+              <div class="step-why">This step is your evidence. Did it work? Did it partially work? Did you do it all the way? This data refines your practice.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Fill in after you've tried it. Before intensity: ___/10.  After intensity: ___/10.  What shifted?"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">Return to fill in Step 5 after trying the opposite action in real life.</div>
+        <button class="ws-save-btn" onclick="saveWS(this,'ws-done-er3')">Save plan ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-er3">✓ Saved. Done fully, Opposite Action is one of the most powerful tools you have. Trust the process. 🔄</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-er3" onclick="completeLesson('er3',this)">Mark lesson complete ✓</button>
+      <button class="next-btn" onclick="goLesson('er4')">Next: ABC PLEASE →</button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LESSON ER4: ABC PLEASE
+  ========================================== -->
+  <div class="lesson-view hidden" id="view-er4">
+    <h2>ABC PLEASE — Your Emotional Foundation</h2>
+    <p class="lesson-intro">No skill works well when your body and lifestyle are working against you. ABC PLEASE is about reducing your baseline emotional vulnerability so that regulation isn't a constant uphill battle.</p>
+
+    <div class="objectives">
+      <div class="obj-icon">🎯</div>
+      <div class="obj-content">
+        <h4>In this lesson you'll learn</h4>
+        <div class="obj-list">
+          <span class="obj-chip">How lifestyle affects emotional baseline</span>
+          <span class="obj-chip">Accumulate Positive Emotions</span>
+          <span class="obj-chip">Build Mastery</span>
+          <span class="obj-chip">PLEASE skills</span>
+          <span class="obj-chip">Your personal action plan</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Your body is your emotional baseline</h3>
+    <p>When you're sleep-deprived, nutritionally depleted, sedentary, or substance-dependent, your emotional thermostat is calibrated much higher. Small triggers set you off. Mild distress becomes unbearable. Regulation skills that should work feel like they don't. <strong>This is not a character flaw — it's physiology.</strong></p>
+    <p>ABC PLEASE skills address the foundation that all other skills rest on. They're not nice-to-haves. In DBT, they're treated as essential maintenance.</p>
+
+    <div class="callout tip">
+      <div class="callout-icon">🌱</div>
+      <div class="callout-body">
+        <div class="c-label">ABC PLEASE at a glance</div>
+        <p><strong>A</strong>ccumulate Positive Emotions · <strong>B</strong>uild Mastery · <strong>C</strong>ope Ahead · <strong>PL</strong>ease treat PhysicaL illness · <strong>E</strong>at balanced · <strong>A</strong>void mood-altering substances · <strong>S</strong>leep · <strong>E</strong>xercise</p>
+      </div>
+    </div>
+
+    <h3>ABC — Building toward a life worth living</h3>
+    <div class="skill-grid">
+      <div class="skill-card"><div class="sk-letter er-text">A</div><h5>Accumulate Positive Emotions</h5><p>Short term: do one pleasant activity daily, mindfully, without multitasking. Long term: build a life with meaning, purpose, and joy — not just absence of pain.</p></div>
+      <div class="skill-card"><div class="sk-letter er-text">B</div><h5>Build Mastery</h5><p>Do one thing daily that makes you feel capable. Not impressive — just competent. Mastery builds self-efficacy and directly counters depression and hopelessness.</p></div>
+      <div class="skill-card"><div class="sk-letter er-text">C</div><h5>Cope Ahead</h5><p>Before a difficult situation, rehearse it mentally — imagine it in detail and walk through using your skills. Preparation makes execution dramatically more likely.</p></div>
+    </div>
+
+    <h3>PLEASE — The physical foundation</h3>
+    <table class="data-table">
+      <tr><th>Skill</th><th>Why it matters for emotion regulation</th></tr>
+      <tr><td>🏥 <strong>Treat illness</strong></td><td>Physical pain and illness consume regulatory capacity. See a doctor. Take prescribed medications. Body and mind are not separate.</td></tr>
+      <tr><td>🥗 <strong>Balanced eating</strong></td><td>Blood sugar crashes and nutritional deficits have direct, measurable effects on mood and irritability. Eat regular, balanced meals.</td></tr>
+      <tr><td>🚫 <strong>Avoid substances</strong></td><td>Alcohol, recreational drugs, excessive caffeine — all dysregulate the nervous system. This is especially critical when already emotionally vulnerable.</td></tr>
+      <tr><td>😴 <strong>Sleep</strong></td><td>Sleep deprivation is one of the most powerful emotional destabilizers that exists. 7–9 hours. Consistent schedule. Non-negotiable.</td></tr>
+      <tr><td>🏃 <strong>Exercise</strong></td><td>Regular aerobic exercise is as effective as antidepressants for mild-to-moderate depression. Even 20 minutes of walking changes neurochemistry.</td></tr>
+    </table>
+
+    <!-- WORKSHEET -->
+    <div class="worksheet">
+      <div class="ws-header">
+        <div class="ws-icon">🌱</div>
+        <div class="ws-header-text">
+          <h4>Worksheet 2.4 — ABC PLEASE Self-Assessment & Action Plan</h4>
+          <p>An honest audit of your current foundation, followed by a concrete one-week commitment. Small and consistent beats big and abandoned.</p>
+        </div>
+      </div>
+      <div class="ws-body">
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">1</div>
+            <div class="ws-step-info">
+              <div class="step-q">Rate your current state in each PLEASE area honestly (1 = poor, 5 = solid).</div>
+              <div class="step-why">This honest baseline tells you where your emotional vulnerability is coming from — often the biggest sources of suffering aren't psychological, they're physical.</div>
+            </div>
+          </div>
+          <div class="slider-wrap" style="margin-bottom:12px;">
+            <label style="font-size:0.8rem;color:var(--text-mid);display:block;margin-bottom:6px;">😴 Sleep quality & quantity</label>
+            <div class="slider-row"><input type="range" class="ws-slider" min="1" max="5" value="3" oninput="this.nextElementSibling.textContent=this.value"><div class="slider-val">3</div></div>
+            <div class="slider-labels"><span>1 · Poor</span><span>5 · Solid</span></div>
+          </div>
+          <div class="slider-wrap" style="margin-bottom:12px;">
+            <label style="font-size:0.8rem;color:var(--text-mid);display:block;margin-bottom:6px;">🏃 Exercise regularity</label>
+            <div class="slider-row"><input type="range" class="ws-slider" min="1" max="5" value="3" oninput="this.nextElementSibling.textContent=this.value"><div class="slider-val">3</div></div>
+            <div class="slider-labels"><span>1 · Never</span><span>5 · Regular</span></div>
+          </div>
+          <div class="slider-wrap" style="margin-bottom:12px;">
+            <label style="font-size:0.8rem;color:var(--text-mid);display:block;margin-bottom:6px;">🥗 Eating (regular, balanced meals)</label>
+            <div class="slider-row"><input type="range" class="ws-slider" min="1" max="5" value="3" oninput="this.nextElementSibling.textContent=this.value"><div class="slider-val">3</div></div>
+            <div class="slider-labels"><span>1 · Poor</span><span>5 · Solid</span></div>
+          </div>
+          <div class="slider-wrap">
+            <label style="font-size:0.8rem;color:var(--text-mid);display:block;margin-bottom:6px;">🚫 Substance use (alcohol, etc.)</label>
+            <div class="slider-row"><input type="range" class="ws-slider" min="1" max="5" value="3" oninput="this.nextElementSibling.textContent=this.value"><div class="slider-val">3</div></div>
+            <div class="slider-labels"><span>1 · Using often</span><span>5 · Not an issue</span></div>
+          </div>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">2</div>
+            <div class="ws-step-info">
+              <div class="step-q">Which PLEASE area scored lowest? What is one concrete, realistic change you'll make this week?</div>
+              <div class="step-why">Pick ONE area — not all of them. One small, consistent change builds real results. Everything at once builds nothing.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Area: _____________&#10;My one change: ________________&#10;Specifically, I will: ________________&#10;Starting: ________________"></textarea>
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">3</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is one pleasant activity you can do every day this week — mindfully, without multitasking?</div>
+              <div class="step-why">The "mindfully" part is what makes this Accumulate Positive Emotions rather than just distraction. You need to actually be present for the positive experience to register emotionally.</div>
+            </div>
+          </div>
+          <input class="ws-input" placeholder="e.g., '20-minute walk with no headphones.' 'Morning coffee, no phone, just tasting it.'">
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">4</div>
+            <div class="ws-step-info">
+              <div class="step-q">What is one thing you can do each day that builds a sense of mastery?</div>
+              <div class="step-why">Not impressive — just competent. Something you can do and feel "I did that." This directly counteracts depression and hopelessness.</div>
+            </div>
+          </div>
+          <input class="ws-input" placeholder="e.g., 'Make my bed.' 'Practice guitar for 15 min.' 'Finish one task on my list before noon.'">
+        </div>
+
+        <div class="ws-step er">
+          <div class="ws-step-head">
+            <div class="ws-step-num">5</div>
+            <div class="ws-step-info">
+              <div class="step-q">Is there a difficult situation coming up? Practice Cope Ahead — describe it and how you'll use your skills.</div>
+              <div class="step-why">Mental rehearsal is a proven technique for performance under pressure. Athletes do it. Surgeons do it. You can too — and it dramatically increases follow-through on skills when the moment arrives.</div>
+            </div>
+          </div>
+          <textarea class="ws-input" placeholder="Situation: ________________&#10;My skills plan for that moment: ________________&#10;What I'll tell myself if I feel like bailing: ________________"></textarea>
+        </div>
+
+      </div>
+      <div class="ws-footer">
+        <div class="ws-note">You've completed both modules. These skills compound with practice — return often.</div>
+        <button class="ws-save-btn" onclick="saveWS(this,'ws-done-er4')">Save & complete course ✓</button>
+      </div>
+      <div class="ws-saved-msg" id="ws-done-er4">🎉 Congratulations — you've completed Modules 1 & 2 of The DBT Journey. These are real, evidence-based skills. Practice them. They build with repetition. 🌿</div>
+    </div>
+
+    <div class="lesson-footer">
+      <button class="complete-btn" id="cb-er4" onclick="completeLesson('er4',this)">Mark lesson complete ✓</button>
+      <div style="font-size:0.8rem;color:var(--text-light);font-style:italic;">Modules 3 & 4 (Mindfulness + Interpersonal Skills) coming soon.</div>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<script>
+// ============================================
+// NAVIGATION
+// ============================================
+const LESSONS = ['welcome','dt1','dt2','dt3','dt4','er1','er2','er3','er4'];
+const LESSON_TITLES = {
+  welcome: 'Welcome to The DBT Journey',
+  dt1: '1.1 — Understanding Distress',
+  dt2: '1.2 — TIPP Skills',
+  dt3: '1.3 — ACCEPTS & Self-Soothe',
+  dt4: '1.4 — Radical Acceptance',
+  er1: '2.1 — How Emotions Work',
+  er2: '2.2 — Check the Facts',
+  er3: '2.3 — Opposite Action',
+  er4: '2.4 — ABC PLEASE',
+};
+const LESSON_BADGES = {
+  welcome: {text:'Intro', cls:'intro'},
+  dt1:{text:'Distress Tolerance',cls:'dt'},
+  dt2:{text:'Distress Tolerance',cls:'dt'},
+  dt3:{text:'Distress Tolerance',cls:'dt'},
+  dt4:{text:'Distress Tolerance',cls:'dt'},
+  er1:{text:'Emotion Regulation',cls:'er'},
+  er2:{text:'Emotion Regulation',cls:'er'},
+  er3:{text:'Emotion Regulation',cls:'er'},
+  er4:{text:'Emotion Regulation',cls:'er'},
+};
+
+let currentLesson = 'welcome';
+let completedSet = new Set();
+
+function goLesson(id) {
+  // Hide all
+  document.querySelectorAll('.lesson-view, .welcome-screen').forEach(el => el.classList.add('hidden'));
+  // Show target
+  const target = document.getElementById('view-' + id);
+  if (target) { target.classList.remove('hidden'); }
+  // Update sidebar active
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  // Update topbar
+  document.getElementById('topbarTitle').textContent = LESSON_TITLES[id] || '';
+  const badge = LESSON_BADGES[id] || {text:'',cls:'intro'};
+  const badgeEl = document.getElementById('topbarBadge');
+  badgeEl.textContent = badge.text;
+  badgeEl.className = 'topbar-badge ' + badge.cls;
+  currentLesson = id;
+  // Scroll to top
+  window.scrollTo(0, 0);
+  document.querySelector('.main').scrollTo(0, 0);
+  // Close mobile sidebar
+  closeSidebar();
+}
+
+function completeLesson(id, btn) {
+  completedSet.add(id);
+  btn.classList.add('done');
+  btn.textContent = '✓ Completed';
+  // Update sidebar dot
+  const dot = document.getElementById('dot-' + id);
+  if (dot) { dot.className = 'nav-dot done'; dot.textContent = '✓'; }
+  // Update progress
+  const count = completedSet.size;
+  const pct = Math.round((count / 8) * 100); // 8 actual lessons (not welcome)
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progText').textContent = count + ' / 8 lessons';
+}
+
+// ============================================
+// MOBILE SIDEBAR
+// ============================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ============================================
+// WORKSHEET
+// ============================================
+function saveWS(btn, msgId) {
+  btn.textContent = 'Saved ✓';
+  btn.classList.add('saved');
+  const msg = document.getElementById(msgId);
+  if (msg) { msg.classList.add('show'); }
+}
+
+function toggleCheck(item) {
+  item.classList.toggle('checked');
+  const cb = item.querySelector('input[type=checkbox]');
+  if (cb) cb.checked = !cb.checked;
+}
+
+// ============================================
+// BREATHING EXERCISE
+// ============================================
+let breathTimer = null;
+let breathActive = false;
+let bPhase = 0;
+let bCycle = 0;
+const BPHASES = [
+  {label:'Inhale...', sub:'breathe in slowly', dur:4000, scale:'scale(1.45)', bg:'#2D6657'},
+  {label:'Hold...', sub:'stay still', dur:4000, scale:'scale(1.45)', bg:'#2D6657'},
+  {label:'Exhale...', sub:'breathe out slowly', dur:4000, scale:'scale(1)', bg:'#3D7D6A'},
+  {label:'Hold...', sub:'stay still', dur:4000, scale:'scale(1)', bg:'#3D7D6A'},
+];
+
+function startBreath() {
+  if (breathActive) {
+    clearTimeout(breathTimer);
+    breathActive = false;
+    const ring = document.getElementById('br');
+    ring.style.transform = '';
+    ring.style.background = '';
+    ring.textContent = 'Ready';
+    document.getElementById('bLabel').textContent = 'Press Start when you\'re ready';
+    document.getElementById('bSub').textContent = 'Box breathing · 4 counts each · 4 rounds';
+    document.getElementById('bBtn').textContent = 'Start';
+    bCycle = 0; bPhase = 0;
+    return;
+  }
+  breathActive = true;
+  bCycle = 0; bPhase = 0;
+  document.getElementById('bBtn').textContent = 'Stop';
+  runBreathPhase();
+}
+
+function runBreathPhase() {
+  if (!breathActive) return;
+  if (bCycle >= 4) {
+    breathActive = false;
+    document.getElementById('br').textContent = '✓';
+    document.getElementById('br').style.transform = '';
+    document.getElementById('bLabel').textContent = 'Well done.';
+    document.getElementById('bSub').textContent = '4 cycles complete · Notice how your body feels';
+    document.getElementById('bBtn').textContent = 'Start Again';
+    return;
+  }
+  const phase = BPHASES[bPhase];
+  const ring = document.getElementById('br');
+  ring.style.transition = `transform ${phase.dur}ms ease, background ${phase.dur/2}ms ease`;
+  ring.style.transform = phase.scale;
+  ring.style.background = phase.bg;
+  document.getElementById('bLabel').textContent = phase.label;
+  document.getElementById('bSub').textContent = phase.sub + (bPhase === 0 ? ` · Round ${bCycle + 1} of 4` : '');
+  let countdown = phase.dur / 1000;
+  ring.textContent = countdown;
+  const countInt = setInterval(() => {
+    countdown--;
+    if (countdown > 0) ring.textContent = countdown;
+    else clearInterval(countInt);
+  }, 1000);
+  breathTimer = setTimeout(() => {
+    bPhase++;
+    if (bPhase >= BPHASES.length) { bPhase = 0; bCycle++; }
+    runBreathPhase();
+  }, phase.dur);
+}
+
+// ============================================
+// INIT
+// ============================================
+window.addEventListener('DOMContentLoaded', () => {
+  goLesson('welcome');
+});
+</script>
+</body>
+</html>
